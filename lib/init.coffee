@@ -230,16 +230,21 @@ module.exports =
       default: true
       description: "Warn about imports of missing modules"
       order: 34
+    followUntypedImports:
+      type: 'boolean'
+      default: false
+      description: "Typecheck modules without stubs or py.typed marker"
+      order: 35
     strictOptional:
       type: 'boolean'
       default: true
       description: "Enable experimental strict Optional checks"
-      order: 35
+      order: 36
     noImplicitOptional:
       type: 'boolean'
       default: true
       description: "Don't assume arguments with default values of None are Optional"
-      order: 36
+      order: 37
 
   theOSTempFolder: undefined
 
@@ -350,6 +355,9 @@ module.exports =
     @subscriptions.add atom.config.observe 'linter-mypy.warnMissingImports',
       (warnMissingImports) =>
         @warnMissingImports = warnMissingImports
+    @subscriptions.add atom.config.observe 'linter-mypy.followUntypedImports',
+      (followUntypedImports) =>
+        @followUntypedImports = followUntypedImports
     @subscriptions.add atom.config.observe 'linter-mypy.strictOptional',
       (strictOptional) =>
         @strictOptional = strictOptional
@@ -590,6 +598,8 @@ module.exports =
 
       if (!@warnMissingImports)#Note: the boolean flag value is inversed since the parameter meaning is inversed.
         params.push("--ignore-missing-imports")
+      if (@followUntypedImports)
+        params.push("--follow-untyped-imports")
 
       if (@strictOptional)
         params.push("--strict-optional")
